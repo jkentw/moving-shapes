@@ -173,6 +173,6 @@ if __name__ == '__main__':
         speed_int = (1,3),
         device=device)
 
-    for i in range(20):
+    for i in range(10):
         surface = shapes.step()
         torchvision.transforms.ToPILImage()(surface[0].detach().cpu().view(32,32)).show()

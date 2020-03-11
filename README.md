@@ -2,16 +2,6 @@
 
 A simple 2d temporal data generator written in PyTorch. Generates frames with a configurable amount of shapes of different shapes and velocities.
 
-![Image](example%20images/objs1.jpg?raw=true)
-![Image](example%20images/objs2.jpg?raw=true)
-![Image](example%20images/objs3.jpg?raw=true)
-![Image](example%20images/objs4.jpg?raw=true)
-![Image](example%20images/objs5.jpg?raw=true)
-![Image](example%20images/objs6.jpg?raw=true)
-![Image](example%20images/objs7.jpg?raw=true)
-![Image](example%20images/objs8.jpg?raw=true)
-![Image](example%20images/objs9.jpg?raw=true)
-![Image](example%20images/objs10.jpg?raw=true)
 
 ### Example usage:
 ```Python
@@ -35,6 +25,19 @@ for i in range(20):
     surface = shapes.step()
     torchvision.transforms.ToPILImage()(surface[0].detach().cpu().view(32,32)).show()
 ```
+
+#### Output
+
+![Image](example%20images/objs1.jpg?raw=true)
+![Image](example%20images/objs2.jpg?raw=true)
+![Image](example%20images/objs3.jpg?raw=true)
+![Image](example%20images/objs4.jpg?raw=true)
+![Image](example%20images/objs5.jpg?raw=true)
+![Image](example%20images/objs6.jpg?raw=true)
+![Image](example%20images/objs7.jpg?raw=true)
+![Image](example%20images/objs8.jpg?raw=true)
+![Image](example%20images/objs9.jpg?raw=true)
+![Image](example%20images/objs10.jpg?raw=true)
 
 ### Parameters
 
