@@ -1,6 +1,4 @@
 
-
-
 import torch
 from typing import Tuple
 
@@ -65,27 +63,27 @@ def rand_unit_vec(dim, device='cpu'):
     t = torch.pow(a,2)
     return a / torch.sqrt(t + t.roll(1,t.dim()-1))
 
-class MovingObjects:
+class MovingShapes:
 
     def __init__(self,
-                 num_objects:int,
+                 num_shapes:int,
                  object_size:int,
                  box_size:int,
                  surface_size:int,
                  batch_size:int,
                  speed_int:Tuple(int, int),
                  device = 'cpu'):
-        self.num_objects = num_objects
+        self.num_shapes = num_shapes
         self.object_size = object_size
-        self.num_lines = num_objects * object_size
+        self.num_lines = num_shapes * object_size
         self.box_size = box_size
         self.surface_size = surface_size
         self.batch_size = batch_size
         self.device = device
 
-        # store all the lines of the objects in one place so they can be drawn in parallel
+        # store all the lines of the shapes in one place so they can be drawn in parallel
         self.lines = torch.zeros((2,self.num_lines,batch_size,2), device=device)
-        for i in range(num_objects):
+        for i in range(num_shapes):
             # index for the lines for this object
             idx = range(i*self.object_size,(i+1)*self.object_size)
             # generate random shape
@@ -95,14 +93,14 @@ class MovingObjects:
                                              device=device)
 
         # offset the box at a random position on the surface
-        start_position = torch.rand((num_objects, batch_size, 2), device=device) * (surface_size - box_size)
+        start_position = torch.rand((num_shapes, batch_size, 2), device=device) * (surface_size - box_size)
         start_position = torch.repeat_interleave(start_position, object_size, dim=0)
         self.lines = self.lines + start_position
 
         # random starting movement direction and speed
         # kept separately so we can dial them separately during trials
-        self.directions = rand_unit_vec((num_objects, batch_size), device=device)
-        self.speeds = (torch.rand((num_objects, batch_size), device=device) * speed_int[1]) + speed_int[0]
+        self.directions = rand_unit_vec((num_shapes, batch_size), device=device)
+        self.speeds = (torch.rand((num_shapes, batch_size), device=device) * speed_int[1]) + speed_int[0]
 
     def move(self):
         '''moves object in direction of the unit vector 'direction'
@@ -113,7 +111,7 @@ class MovingObjects:
         '''
 
         # we have to check each object separately
-        for i in range(self.num_objects):
+        for i in range(self.num_shapes):
             # index for the lines for this object
             idx = range(i*self.object_size,(i+1)*self.object_size)
 
@@ -166,15 +164,15 @@ if __name__ == '__main__':
     else:
         device = 'cpu'
 
-    objs = MovingObjects(
+    shapes = MovingShapes(
         box_size = 16,
         surface_size = 32,
         object_size = 3,
         batch_size = 3,
-        num_objects = 5,
+        num_shapes = 5,
         speed_int = (1,3),
         device=device)
 
     for i in range(20):
-        surface = objs.step()
+        surface = shapes.step()
         torchvision.transforms.ToPILImage()(surface[0].detach().cpu().view(32,32)).show()

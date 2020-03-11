@@ -13,7 +13,7 @@ if torch.cuda.is_available():
 else:
     device = 'cpu'
 
-objs = MovingShapes(
+shapes = MovingShapes(
     box_size = 16,
     surface_size = 32,
     object_size = 3,
@@ -23,7 +23,7 @@ objs = MovingShapes(
     device=device)
 
 for i in range(20):
-    surface = objs.step()
+    surface = shapes.step()
     torchvision.transforms.ToPILImage()(surface[0].detach().cpu().view(32,32)).show()
 ```
 
