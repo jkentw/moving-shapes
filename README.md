@@ -26,7 +26,7 @@ for i in range(20):
     torchvision.transforms.ToPILImage()(surface[0].detach().cpu().view(32,32)).show()
 ```
 
-#### Output
+#### Outputs:
 
 ![Image](example%20images/objs1.jpg?raw=true)
 ![Image](example%20images/objs2.jpg?raw=true)
