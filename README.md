@@ -17,7 +17,7 @@ shapes = MovingShapes(
     surface_size = 32,
     object_size = 3,
     batch_size = 3,
-    num_shapes = 5,
+    num_shapes = 3,
     speed_int = (1,3),
     device=device)
 

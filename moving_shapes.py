@@ -71,7 +71,7 @@ class MovingShapes:
                  box_size:int,
                  surface_size:int,
                  batch_size:int,
-                 speed_int:Tuple(int, int),
+                 speed_int:Tuple[int, int],
                  device = 'cpu'):
         self.num_shapes = num_shapes
         self.object_size = object_size
@@ -169,7 +169,7 @@ if __name__ == '__main__':
         surface_size = 32,
         object_size = 3,
         batch_size = 3,
-        num_shapes = 5,
+        num_shapes = 3,
         speed_int = (1,3),
         device=device)
 
