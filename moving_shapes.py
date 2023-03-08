@@ -120,8 +120,6 @@ class Polygon:
 			intersections = sorted(intersections)
 			x = 0
 			fill = 0
-			
-			print(intersections)
 		
 			for i in range(0, len(intersections)):
 				while x < intersections[i]:
@@ -287,25 +285,53 @@ if __name__ == '__main__':
 	
 	gen = ImageGenerator(shapes=[poly1, poly2, poly3], size=[256,192])
 	
+	if write_to_file:
+		# open csv files for recording object centers of mass
+		com_files = []
+		
+		for i in range(len(gen.shapes)):
+			com_files.append(open(output_path + '/poly_com' + str(i) + '.csv', 'w'))
+	
 	# run generator
 	for i in range(args.num_frames):
 		gen.draw()
 		
 		if args.draw_mode == 'diff':
 			img = gen.diff_img
+			
+			com = []
+			
+			# calculate diff_com
+			for j in range(len(gen.shapes)):
+				com.append([gen.shapes[j].center[0] + gen.shapes[j].position[0], 
+					gen.shapes[j].center[1] + gen.shapes[j].position[1]])
 		else:
 			img = gen.img
+			com = []
+			
+			for j in range(len(gen.shapes)):
+				com.append([gen.shapes[j].center[0] + gen.shapes[j].position[0], 
+					gen.shapes[j].center[1] + gen.shapes[j].position[1]])
 		
 		gen.move()
 		
-		print("--- frame " + str(i))
-		
-		for j in range(len(gen.shapes)):
-			print("shape " + str(j) + ": " + str(gen.shapes[j].center[0] + gen.shapes[j].position[0]) +
-				", " + str(gen.shapes[j].center[1] + gen.shapes[j].position[1]))
-		
 		if write_to_file:
 			img.save(output_path + '/frame' + str(i) + '.png')
+			
+			# append position data
+			for j in range(len(com_files)):
+				com_files[j].write(str(com[j][0]) + ", " + str(com[j][1]) + "\n")
+			
 		else:
 			img.show()
+			print("--- frame " + str(i))
+		
+			for j in range(len(gen.shapes)):
+				print("shape " + str(j) + ": " + str(com[j][0]) + ", " + str(com[j][1]))
+					
+	# close csv files, if applicable
+	if write_to_file:
+		for i in range(len(com_files)):
+			com_files[i].close()
+			
 	
