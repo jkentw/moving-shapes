@@ -17,26 +17,28 @@ class Polygon:
 				 draw_mode='lines'):
 		
 		if points is None:
-			self.points = [[random.randint(0, size[0]), random.randint(0, size[1])] for i in range(0, num_points)]
-			self.size = size
-		else:
-			min_pt_x = points[0][0]
-			min_pt_y = points[0][1]
-			max_pt_x = points[0][0]
-			max_pt_y = points[0][1]
+			points = [[random.randint(0, size[0]), random.randint(0, size[1])] for i in range(0, num_points)]
+
+		min_pt_x = points[0][0]
+		min_pt_y = points[0][1]
+		max_pt_x = points[0][0]
+		max_pt_y = points[0][1]
+	
+		for i in range(1, len(points)):
+			min_pt_x = min(points[i][0], min_pt_x)
+			min_pt_y = min(points[i][1], min_pt_y)
+			max_pt_x = max(points[i][0], max_pt_x)
+			max_pt_y = max(points[i][1], max_pt_y)
+			
+		# size should account for possible rotation (which depends on center of mass, not geometry)
+		# add margins equal to the maximum size of the shape
+		# (there is probably a better way to do this but it works)
+		shape_size = int(((max_pt_x - min_pt_x)**2 + (max_pt_y - min_pt_y)**2) ** 0.5 + 1)
+		self.size = [max_pt_x - min_pt_x + 2*shape_size, max_pt_y - min_pt_y + 2*shape_size]
+		self.points = points
 		
-			for i in range(1, len(points)):
-				min_pt_x = min(points[i][0], min_pt_x)
-				min_pt_y = min(points[i][1], min_pt_y)
-				max_pt_x = max(points[i][0], max_pt_x)
-				max_pt_y = max(points[i][1], max_pt_y)
-				
-			self.size = [max_pt_x - min_pt_x, max_pt_y - min_pt_y]
-			self.points = points
-			
-			for i in range(0, len(points)):
-				self.points[i] = [points[i][0]-min_pt_x, points[i][1]-min_pt_y]
-			
+		for i in range(0, len(points)):
+			self.points[i] = [points[i][0]-min_pt_x+shape_size, points[i][1]-min_pt_y+shape_size]	
 		
 		self.theta = theta
 		self.angular_velocity = angular_velocity
@@ -60,7 +62,7 @@ class Polygon:
 			self.draw_solid()
 	
 	def draw(self, img):
-		tmp = self.base_img.rotate(self.theta, resample=Resampling.BILINEAR, center=self.center, expand=1, fillcolor=0)
+		tmp = self.base_img.rotate(self.theta, resample=Resampling.BILINEAR, center=self.center, expand=0, fillcolor=0)
 		img.paste(tmp, box=(int(self.position[0] - self.center[0]), int(self.position[1] - self.center[1])), mask=tmp)
 	
 	# incorrect; needs to be fixed
@@ -199,12 +201,13 @@ class ImageGenerator:
 			self.shapes[i].theta += self.shapes[i].angular_velocity
 
 			max_ = [0, 0]
-			min_ = [self.size[0], self.size[1]]
+			min_ = [0, 0]
+			# min_ = [self.size[0], self.size[1]]
 			
 			# calculate max and min for each axis
-			for j in range(0, len(self.shapes[i].points)):
-				max_ = [max(max_[0], self.shapes[i].points[j][0]), max(max_[1], self.shapes[i].points[j][1])]
-				min_ = [min(min_[0], self.shapes[i].points[j][0]), min(min_[1], self.shapes[i].points[j][1])]	
+			# for j in range(0, len(self.shapes[i].points)):
+			#	max_ = [max(max_[0], self.shapes[i].points[j][0]), max(max_[1], self.shapes[i].points[j][1])]
+			#	min_ = [min(min_[0], self.shapes[i].points[j][0]), min(min_[1], self.shapes[i].points[j][1])]	
 			
 			max_[0] += self.shapes[i].position[0]
 			max_[1] += self.shapes[i].position[1]
@@ -264,7 +267,7 @@ if __name__ == '__main__':
 							 ''') # TODO: newlines do not display; fix them
 	
 	args = parser.parse_args()
-	print(args)
+	# print(args)
 	
 	# if applicable, create output directory
 	if args.output_path is not None:
@@ -278,9 +281,9 @@ if __name__ == '__main__':
 		write_to_file = False
 		output_path = None
 	
-	poly1 = Polygon(theta=0, angular_velocity=10, points=[[0,0],[32,32],[8,48]], velocity=[2,4], position=[64, 128], draw_mode=args.draw_mode)
-	poly2 = Polygon(theta=0, angular_velocity=-5, points=[[0,0],[48,0],[8,48],[40,60]], velocity=[-4,3], position=[96, 20], draw_mode=args.draw_mode)
-	poly3 = Polygon(theta=30, angular_velocity=-2, points=[[0,0],[32,0],[32,32],[0,32]], velocity=[3,-2], position=[192, 40], draw_mode=args.draw_mode)
+	poly1 = Polygon(theta=0, angular_velocity=10, points=[[0,0],[32,32],[8,48]], velocity=[3,5], position=[64, 128], draw_mode=args.draw_mode)
+	poly2 = Polygon(theta=0, angular_velocity=-5, points=[[0,0],[48,0],[8,48],[40,60]], velocity=[-6,4], position=[96, 20], draw_mode=args.draw_mode)
+	poly3 = Polygon(theta=30, angular_velocity=-2, points=[[0,0],[32,0],[32,32],[0,32]], velocity=[4,-3], position=[192, 40], draw_mode=args.draw_mode)
 	
 	gen = ImageGenerator(shapes=[poly1, poly2, poly3], size=[256,192])
 	
